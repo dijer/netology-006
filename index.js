@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { Book } = require('./models');
-const e = require('express');
 const mockBooks = require('./mock/mockBooks');
 
 const store = {
