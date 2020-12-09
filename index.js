@@ -49,9 +49,6 @@ app.post('/api/books', (req, res) => {
         fileName,
     } = req.body;
 
-    console.log(req.body);
-    console.log(req);
-
     const book = new Book({
         title,
         description,
