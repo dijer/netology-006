@@ -1,4 +1,6 @@
 const express = require('express');
+const counterMiddleware = require('../middleware/counter');
+
 const router = express.Router();
 const { Book } = require('../models');
 const { books } = require('../store');
@@ -40,14 +42,15 @@ router.post('/create', (req, res) => {
     res.redirect('/books')
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', counterMiddleware(), async (req, res) => {
     const { id } = req.params;
+    const { counter } = res.locals || 0;
     const foundBook = books.find(book => book.id === id);
-
     if (foundBook) {
         res.render("books/view", {
             title: "Book | view",
             book: foundBook,
+            counter,
         });
     } else {
         res.status(404).redirect('/404');

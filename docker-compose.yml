@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  counter:
+    image: dijer/netology-009-counter
+    ports:
+      - 3001:3000
+    environment:
+      PORT: 3000
+  books:
+    build: .
+    ports:
+      - 80:3000
+    environment:
+      PORT: 3000
+      COUNTER_URL: http://counter:3001
