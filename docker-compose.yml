@@ -4,6 +4,8 @@ services:
     image: dijer/netology-009-counter
     ports:
       - 3001:3000
+    volumes:
+      - ./volumes/data.json:/app/src/data.json:rw
     environment:
       PORT: 3000
   books:
