@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-const uuid = require('uuid');
 
 const bookSchema = new Schema({
     title: {
