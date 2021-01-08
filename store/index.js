@@ -1,5 +1,5 @@
-const user = require('./mock/mockUser');
+const users = require('./mock/mockUser');
 
 module.exports = {
-    user,
+    users,
 };

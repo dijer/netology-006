@@ -1,0 +1,52 @@
+<%- include("../partials/layout-start", {title: title}) %>
+<%- include("../partials/menu") %>
+
+<h1><%= title %></h1>
+
+<h2>Войти</h2>
+<form method="POST" class="mt-5">
+    <div class="form-group">
+        <label for="usernameLogin">username</label>
+        <input type="text"
+            name="username"
+            class="form-control"
+            id="usernameLogin">
+    </div>
+
+    <div class="form-group">
+        <label for="passwordLogin">пароль</label>
+        <input type="password"
+            name="password"
+            class="form-control"
+            id="passwordLogin">
+    </div>
+
+    <div class="form-group text-right ">
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </div>
+</form>
+
+<h2>Регистрация</h2>
+<form method="POST" action="/user/signup" class="mt-5">
+    <div class="form-group">
+        <label for="usernameRegister">username</label>
+        <input type="text"
+            name="username"
+            class="form-control"
+            id="usernameRegister">
+    </div>
+
+    <div class="form-group">
+        <label for="passwordRegister">пароль</label>
+        <input type="password"
+            name="password"
+            class="form-control"
+            id="passwordRegister">
+    </div>
+
+    <div class="form-group text-right ">
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </div>
+</form>
+
+<%- include("../partials/layout-end") %>
