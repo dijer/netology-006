@@ -12,11 +12,8 @@ const expressSession = require('express-session');
 const errorMiddleware = require('./middleware/error');
 const indexRouter = require('./routes/index');
 const booksApiRouter = require('./routes/api/books');
-const userApiRouter = require('./routes/api/user');
 const booksRouter = require('./routes/books');
 const usersRouter = require('./routes/users');
-
-const store = require('./store');
 
 const app = express();
 
@@ -86,7 +83,6 @@ app.use('/', indexRouter);
 app.use('/books', booksRouter);
 app.use('/api/books', booksApiRouter);
 app.use('/user', usersRouter);
-app.use('/api/user', userApiRouter);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
