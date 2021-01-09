@@ -23,6 +23,36 @@
                     </form>
                 </div>
 
+                <div>
+                    <form id="form">
+                        <div id="messages"></div>
+                        <input id="input" required>
+                        <button class="btn btn-green">Submit</button>
+                    </form>
+                    <script>
+                        const form = document.getElementById('form');
+                        const input = document.getElementById('input');
+                        const button = document.getElementById('button');
+                        const messages = document.getElementById('messages');
+    
+                        const roomName = location.pathname.split('/').pop();
+                        const socket = io.connect('/', {query: `roomName=${roomName}`});
+                        
+                        socket.on('message-to-room', (msg) => {
+                            const newMessage = document.createElement('div');
+                            newMessage.textContent = msg;
+                            messages.appendChild(newMessage);
+                        });
+    
+                        form.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const text = input.value;
+                            socket.emit('message-to-room', text);
+                            input.value = '';
+                        });
+                    </script>
+                </div>
+
             </div>
         </div>
     </div>
