@@ -9,6 +9,9 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const expressSession = require('express-session');
 
+const http = require('http');
+const socketIO = require('socket.io');
+
 const errorMiddleware = require('./middleware/error');
 const indexRouter = require('./routes/index');
 const booksApiRouter = require('./routes/api/books');
@@ -16,6 +19,8 @@ const booksRouter = require('./routes/books');
 const usersRouter = require('./routes/users');
 
 const app = express();
+const server = http.Server(app);
+const io = socketIO(server);
 
 /**
  * @param {String} username
@@ -93,7 +98,7 @@ async function start() {
         const NAME_DB = process.env.NAME_DB;
         const urlDB = `mongodb+srv://app-node:${PASSWORD_DB}@cluster0.syuc2.mongodb.net/${NAME_DB}?retryWrites=true&w=majority`;
         await mongoose.connect(urlDB);
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     } catch (e) {
@@ -101,5 +106,20 @@ async function start() {
     }
 }
 
-start();
+io.on('connection', socket => {
+    const { id } = socket;
+    console.log(`Socket connected: ${id}`);
 
+    const { roomName } = socket.handshake.query;
+    socket.join(roomName);
+    socket.on('message-to-room', (msg) => {
+        socket.to(roomName).emit('message-to-room', msg);
+        socket.emit('message-to-room', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(`Socket disconnected: ${id}`);
+    });
+});
+
+start();
