@@ -1,9 +1,10 @@
-require('dotenv').config()
+require('dotenv').config();
+require('reflect-metadata');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const { User } = require('./models');
+import { User } from "./models";
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;

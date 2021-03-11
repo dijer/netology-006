@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fileMiddleware = require('../../middleware/files');
-const { Book } = require('../../models');
+import { Book } from '../../models';
 
 router.get('/', async (req, res) => {
     const books = await Book.find().select('-__v');
@@ -96,19 +96,19 @@ router.post('/upload', fileMiddleware.single('cover-book'), (req, res) => {
     }
 });
 
-router.get('/:id/download', async (req, res) => {
-    const { id } = req.params;
+// router.get('/:id/download', async (req, res) => {
+//     const { id } = req.params;
 
-    try {
-        const { fileName, fileBook } = await Book.findById(id).select('fileName fileBook');
-        res.download(__dirname+`/../public/books/${fileName}`, fileBook, err => {
-            if (err){
-                res.status(404).json();
-            }
-        });
-    } catch (e) {
-        res.status(404).json();
-    }
-});
+//     try {
+//         const { fileName, fileBook } = await Book.findById(id).select('fileName fileBook');
+//         res.download(__dirname+`/../public/books/${fileName}`, fileBook, err => {
+//             if (err){
+//                 res.status(404).json();
+//             }
+//         });
+//     } catch (e) {
+//         res.status(404).json();
+//     }
+// });
 
 module.exports = router;
