@@ -1,11 +1,14 @@
 const express = require('express');
 const counterMiddleware = require('../middleware/counter');
-const { Book } = require('../models');
+import container from '../contracts/container';
+import BookRepository from '../contracts/book.repository';
 
 const router = express.Router();
 
+const repo = container.get(BookRepository);
+
 router.get('/', async (req, res) => {
-    const books = await Book.find();
+    const books = await repo.getBooks();
     res.render("books/index", {
         title: "Books",
         books,
@@ -20,26 +23,8 @@ router.get('/create', (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-    const {
-        title,
-        description,
-        authors,
-        favorite,
-        fileCover,
-        fileName,
-    } = req.body;
-
-    const book = new Book({
-        title,
-        description,
-        authors,
-        favorite,
-        fileCover,
-        fileName,
-    });
-
     try {
-        await book.save();
+        await repo.createBook(req.body);
         res.redirect('/books');
     } catch (e) {
         console.log(e);
@@ -50,7 +35,7 @@ router.get('/:id', counterMiddleware(), async (req, res) => {
     const { id } = req.params;
     const { counter } = res.locals || 0;
     try {
-        const book = await Book.findById(id);
+        const book = await repo.getBook(id);
         res.render("books/view", {
             title: "Book | view",
             book,
@@ -66,7 +51,7 @@ router.get('/update/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const book = await Book.findById(id);
+        const book = await repo.getBook(id);
         res.render("books/update", {
             title: "Book | view",
             book,
@@ -78,25 +63,9 @@ router.get('/update/:id', async (req, res) => {
 });
 
 router.post('/update/:id', async (req, res) => {
-    const {
-        id,
-        title,
-        description,
-        authors,
-        favorite,
-        fileCover,
-        fileName,
-    } = req.params;
-
+    const { id } = req.params;
     try {
-        const book = await Book.findByIdAndUpdate(id, {
-            title,
-            description,
-            authors,
-            favorite,
-            fileCover,
-            fileName,
-        });
+        await repo.updateBook(id, req.params);
         res.redirect(`/books/${id}`);
     } catch (e) {
         console.error(e);
@@ -108,7 +77,7 @@ router.post('/delete/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        await Book.deleteOne({ _id: id });
+        await repo.deleteBook(id);
         res.redirect(`/books`);
     } catch (e) {
         console.error(e);

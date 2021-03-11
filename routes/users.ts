@@ -1,7 +1,6 @@
-const express = require('express');
-const passport = require('passport')
-const { User } = require('../models');
-const { authenticate } = require('../middleware/authenticate');
+import express, { Request, Response } from 'express';
+import { User } from '../models';
+import authenticate from '../middleware/authenticate';
 
 const router = express.Router();
 
@@ -17,13 +16,14 @@ router.post('/login',
         res.redirect('/user/me');
 });
 
-router.get('/me', (req, res) => {
-    const { username } = req.user;
-    res.render("users/me", {
-        title: "Профиль",
-        username,
-    });
-});
+// TODO: Fix this
+// router.get('/me', (req: Request, res: Response) => {
+//     const { username } = req.user;
+//     res.render("users/me", {
+//         title: "Профиль",
+//         username,
+//     });
+// });
 
 router.post('/signup', async (req, res) => {
     const { username, password } = req.body;

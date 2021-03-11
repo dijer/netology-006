@@ -1,6 +1,6 @@
-const passport = require('passport');
+import passport from 'passport';
 
-const authenticate = () =>
+export default () =>
     (req, res, next) => {
         passport.authenticate(
             'local',
@@ -9,5 +9,3 @@ const authenticate = () =>
             },
         )(req, res, next);
     }
-
-module.exports = { authenticate };
