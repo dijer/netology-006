@@ -1,8 +1,12 @@
-import express, { Request, Response } from 'express';
-import { User } from '../models';
-import authenticate from '../middleware/authenticate';
+import express from 'express';
+import container from '../../container';
+import User from '../../database/mongo/users/users.model';
+import authenticate from '../../users/users.middleware.authenticate';
+import IUsersService from '../../users/users.service.interface';
 
 const router = express.Router();
+
+const usersService = container.get(IUsersService);
 
 router.get('/login', (req, res) => {
     res.render("users/login", {
@@ -28,11 +32,10 @@ router.post('/login',
 router.post('/signup', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = new User({
+        await usersService.createUser({
             username,
             password,
         });
-        await user.save();
         res.redirect('/user/login')
     } catch (e) {
 
@@ -51,4 +54,4 @@ router.get('/logout', (req, res) => {
     res.redirect('/user/login');
 });
 
-module.exports = router;
+export default router;

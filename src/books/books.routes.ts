@@ -1,18 +1,21 @@
-const express = require('express');
+import express from 'express';
+import fileMiddleware from './books.middleware.files';
+import container from '../container';
+import IBooksService from './books.service.interface';
+
 const router = express.Router();
-const fileMiddleware = require('../../middleware/files');
-import { Book } from '../../models';
+
+const booksService = container.get(IBooksService);
 
 router.get('/', async (req, res) => {
-    const books = await Book.find().select('-__v');
+    const books = await booksService.getBooks();
     res.json(books);
 });
 
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-
     try {
-        const book = await Book.findById(id);
+        const book = await booksService.getBook(id);
         return res.json(book);
     } catch (e) {
         console.error(e);
@@ -31,16 +34,15 @@ router.post('/', async (req, res) => {
         fileName,
     } = req.body;
 
-    const book = new Book({
-        title,
-        description,
-        authors,
-        favorite,
-        fileCover,
-        fileName,
-    });
     try {
-        await book.save();
+        const book = await booksService.createBook({
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        });
         res.status(201);
         res.json(book);
     } catch (e) {
@@ -60,7 +62,7 @@ router.put('/:id', async (req, res) => {
     } = req.params;
 
     try {
-        const foundBook = await Book.findByIdAndUpdate(id, {
+        const updatedBook = await booksService.updateBook(id, {
             title,
             description,
             authors,
@@ -68,7 +70,7 @@ router.put('/:id', async (req, res) => {
             fileCover,
             fileName,
         });
-        return res.json(foundBook);
+        return res.json(updatedBook);
     } catch (e) {
         res.status(404);
         res.json('Book not found!');
@@ -79,7 +81,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        await Book.deleteOne({ _id: id });
+        await booksService.deleteBook(id);
         return res.json('ok');
     } catch (e) {
         res.status(404);
@@ -111,4 +113,4 @@ router.post('/upload', fileMiddleware.single('cover-book'), (req, res) => {
 //     }
 // });
 
-module.exports = router;
+export default router;

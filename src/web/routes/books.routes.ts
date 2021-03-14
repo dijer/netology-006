@@ -1,14 +1,14 @@
-const express = require('express');
-const counterMiddleware = require('../middleware/counter');
-import container from '../contracts/container';
-import BookRepository from '../contracts/book.repository';
+import express from 'express';
+import counterMiddleware from '../../books/books.middleware.counter';
+import container from '../../container';
+import IBooksService from '../../books/books.service.interface';
 
 const router = express.Router();
 
-const repo = container.get(BookRepository);
+const booksService = container.get(IBooksService);
 
 router.get('/', async (req, res) => {
-    const books = await repo.getBooks();
+    const books = await booksService.getBooks();
     res.render("books/index", {
         title: "Books",
         books,
@@ -24,7 +24,22 @@ router.get('/create', (req, res) => {
 
 router.post('/create', async (req, res) => {
     try {
-        await repo.createBook(req.body);
+        const {
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        } = req.body;
+        await booksService.createBook({
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        });
         res.redirect('/books');
     } catch (e) {
         console.log(e);
@@ -35,7 +50,7 @@ router.get('/:id', counterMiddleware(), async (req, res) => {
     const { id } = req.params;
     const { counter } = res.locals || 0;
     try {
-        const book = await repo.getBook(id);
+        const book = await booksService.getBook(id);
         res.render("books/view", {
             title: "Book | view",
             book,
@@ -51,7 +66,7 @@ router.get('/update/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const book = await repo.getBook(id);
+        const book = await booksService.getBook(id);
         res.render("books/update", {
             title: "Book | view",
             book,
@@ -65,7 +80,22 @@ router.get('/update/:id', async (req, res) => {
 router.post('/update/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await repo.updateBook(id, req.params);
+        const {
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        } = req.params;
+        await booksService.updateBook(id, {
+            title,
+            description,
+            authors,
+            favorite,
+            fileCover,
+            fileName,
+        });
         res.redirect(`/books/${id}`);
     } catch (e) {
         console.error(e);
@@ -77,7 +107,7 @@ router.post('/delete/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        await repo.deleteBook(id);
+        await booksService.deleteBook(id);
         res.redirect(`/books`);
     } catch (e) {
         console.error(e);
@@ -85,4 +115,4 @@ router.post('/delete/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

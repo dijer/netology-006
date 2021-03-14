@@ -1,35 +1,38 @@
-require('dotenv').config();
-require('reflect-metadata');
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-import { User } from "./models";
+import dotenv from 'dotenv'
+import 'reflect-metadata';
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import User from "../database/mongo/users/users.model";
+import { IUser } from '../users/users.interface';
 
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const expressSession = require('express-session');
+import passport from 'passport';
+import { Strategy as LocalStrategy, IStrategyOptions } from 'passport-local';
+import expressSession from 'express-session';
 
-const http = require('http');
-const socketIO = require('socket.io');
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
-const errorMiddleware = require('./middleware/error');
-const indexRouter = require('./routes/index');
-const booksApiRouter = require('./routes/api/books');
-const booksRouter = require('./routes/books');
-const usersRouter = require('./routes/users');
+import errorMiddleware from './middleware/error';
+import indexRouter from './routes/index';
+import booksApiRouter from '../books/books.routes';
+import booksRouter from './routes/books.routes';
+import usersRouter from './routes/users.routes';
+
+dotenv.config();
 
 const app = express();
-const server = http.Server(app);
-const io = socketIO(server);
+const server = createServer(app);
+const io = new Server(server);
 
 /**
  * @param {String} username
  * @param {String} password
  * @param {Function} done
  */
-function verify(username, password, done) {
-    User.findOne({ username }, (err,user) => {
+function verify(username: string, password: string, done: Function) {
+    User.findOne({ username }, (err: string, user: IUser) => {
         if (err) {
             return done(err);
         }
@@ -42,7 +45,7 @@ function verify(username, password, done) {
     });
 }
 
-const options = {
+const options: IStrategyOptions = {
     usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: false,
@@ -51,13 +54,13 @@ const options = {
 //  Добавление стратегии для использования
 passport.use('local', new LocalStrategy(options, verify));
 
-passport.serializeUser(function(user, done) {
-    done(null, user.id);
-});
+// passport.serializeUser(function(user: IUser, done: (err: any, id?: string) => void) {
+//     done(null, user.id);
+// });
 
 
 passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err,user){
+    User.findById(id, function(err: string, user: IUser){
         err 
             ? done(err)
             : done(null,user);
@@ -68,7 +71,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(expressSession({
-    secret: process.env.COOKIE_SECRET,
+    secret: process.env.COOKIE_SECRET!,
     resave: false,
     saveUninitialized: false,
 }))
@@ -113,7 +116,7 @@ io.on('connection', socket => {
 
     const { roomName } = socket.handshake.query;
     socket.join(roomName);
-    socket.on('message-to-room', (msg) => {
+    socket.on('message-to-room', (msg: string) => {
         socket.to(roomName).emit('message-to-room', msg);
         socket.emit('message-to-room', msg);
     });

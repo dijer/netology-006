@@ -1,13 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
-
-export interface IBook extends Document {
-    title: string;
-    description: string;
-    authors: string;
-    favorite: string;
-    fileCover: string;
-    fileName: string;
-}
+import { Schema, model } from 'mongoose';
+import { IBook } from '../../../books/books.interface';
 
 const bookSchema = new Schema({
     title: {

@@ -1,26 +1,21 @@
 import { injectable } from "inversify";
-import Book, { IBook } from '../models/Book';
-
-export abstract class IBookRepository {
-    abstract createBook: (book: IBook) => Promise<IBook>;
-    abstract getBook: (id: string) => Promise<IBook>;
-    abstract getBooks: () => Promise<IBook[]>;
-    abstract updateBook: (id: string, data: IBook) => Promise<IBook>;
-    abstract deleteBook: (id: string) => Promise<void>;
-}
+import Book from './books.model';
+import IBooksService, { IBookData } from '../../../books/books.service.interface';
 
 @injectable()
-export default class BookRepository implements IBookRepository {
-    async createBook(data: IBook) {
-        const {
-            title,
-            description,
-            authors,
-            favorite,
-            fileCover,
-            fileName,
-        } = data;
-    
+export default class BooksService implements IBooksService {
+    constructor() {
+        console.log('new BooksService');
+    }
+
+    async createBook({
+        title,
+        description,
+        authors,
+        favorite,
+        fileCover,
+        fileName,
+    }: IBookData) {
         const book = new Book({
             title,
             description,
@@ -43,16 +38,14 @@ export default class BookRepository implements IBookRepository {
         return books;
     }
 
-    async updateBook(id: string, data: IBook) {
-        const {
-            title,
-            description,
-            authors,
-            favorite,
-            fileCover,
-            fileName,
-        } = data;
-    
+    async updateBook(id: string, {
+        title,
+        description,
+        authors,
+        favorite,
+        fileCover,
+        fileName,
+    }: IBookData) {
         try {
             const book = await Book.findByIdAndUpdate(id, {
                 title,
