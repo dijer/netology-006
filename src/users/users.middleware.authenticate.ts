@@ -1,7 +1,8 @@
 import passport from 'passport';
+import { Request, Response, NextFunction } from 'express';
 
 export default () =>
-    (req, res, next) => {
+    (req: Request, res: Response, next: NextFunction) => {
         passport.authenticate(
             'local',
             {
