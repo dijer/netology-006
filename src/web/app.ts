@@ -20,6 +20,8 @@ import booksApiRouter from '../books/books.routes';
 import booksRouter from './routes/books.routes';
 import usersRouter from './routes/users.routes';
 
+import path from 'path';
+
 dotenv.config();
 
 const app = express();
@@ -54,9 +56,9 @@ const options: IStrategyOptions = {
 //  Добавление стратегии для использования
 passport.use('local', new LocalStrategy(options, verify));
 
-// passport.serializeUser(function(user: IUser, done: (err: any, id?: string) => void) {
-//     done(null, user.id);
-// });
+passport.serializeUser(function(user, done){
+    done(null, user);
+});
 
 
 passport.deserializeUser(function(id, done) {
@@ -80,6 +82,7 @@ app.use(passport.session());
 
 app.use(cors());
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, './views'))
 
 app.use('/public', express.static(__dirname + '/public'));
 

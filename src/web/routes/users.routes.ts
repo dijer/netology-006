@@ -20,14 +20,15 @@ router.post('/login',
         res.redirect('/user/me');
 });
 
-// TODO: Fix this
-// router.get('/me', (req: Request, res: Response) => {
-//     const { username } = req.user;
-//     res.render("users/me", {
-//         title: "Профиль",
-//         username,
-//     });
-// });
+router.get('/me', (req, res) => {
+    if (res.locals.user) {
+        const { username } = res.locals.user;
+        res.render("users/me", {
+            title: "Профиль",
+            username,
+        });
+    }
+});
 
 router.post('/signup', async (req, res) => {
     const { username, password } = req.body;
